@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "data360-mcp": {
+      "type": "remote",
+      "url": "https://maimcpext.worldbank.org/ext/data360/mcp",
+      "enabled": true
+    }
+  }
+}
