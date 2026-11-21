@@ -106,25 +106,28 @@ Shortlist de foco (datacenter / conectividad / energía / infraestructura):
 
 ### 4.5 Visualizaciones de exploración (opcionales)
 
-> **No** son las 3 visualizaciones obligatorias del enunciado: son candidatas para mostrar el Paso 1 (anexo / notebook de exploración). Elegir 0–3 más adelante.
+> **No** son las 3 visualizaciones obligatorias del enunciado: son el anexo / notebook de exploración del Paso 1.
 
-| # | Visualización | Codificación | Fuente | ¿La hacemos? |
+| # | Visualización | Codificación | Fuente | Estado |
 |---|---|---|---|---|
-| 1 | Treemap jerárquico L0 → L1 → L2 | área = indicadores | `topic_summary.csv` | No — mezcla 19 vocabularios y ~40 % de indicadores sin L1/L2; jerarquía no limpia |
-| 2 | Barras top-N bases por indicadores, color = tema L1 | x = indicadores, y = base | `database_summary.csv` | **Sí** |
-| 3 | Heatmap base × región | color = cobertura media | `database_region_coverage.csv` | No — 171 bases × 9 regiones es demasiado denso para un anexo |
-| 4 | Dumbbell fin nominal vs último dato real | par de puntos por base | `database_actual_freshness.csv` | **Sí** |
-| 5 | Barras apiladas de periodicidad | conteo por periodicidad | `indicators.csv` | No — 95 % anual; se resuelve con una frase, no con un gráfico |
-| 6 | Scatter indicadores vs cobertura mediana | x = ind., y = cobertura | `database_summary.csv` | **Sí** |
+| 1 | Treemap jerárquico L0 → L1 → L2 | área = indicadores; borde = nivel | `indicators.csv` (`topic_l0/l1/l2`) | **Hecha** (incluye “Sin clasificar”) |
+| 2 | Barras top-N bases por indicadores, color = tema L1 | x = indicadores, y = base | `database_summary.csv` | **Hecha** |
+| 3 | Heatmap base × región | color = cobertura media | `database_region_coverage.csv` | **Hecha** (top 25 + shortlist) |
+| 4 | Dumbbell fin nominal vs último dato real | par de puntos por base | `database_actual_freshness.csv` | **Hecha** |
+| 5 | Barras apiladas de periodicidad | composición porcentual por base | `indicators.csv` | **Hecha** |
+| 6 | Scatter indicadores vs cobertura mediana | x = ind., y = cobertura | `database_summary.csv` | **Hecha** |
 
-Detalle de cada una: `02-api-exploration-findings.md` §8.
+Detalle de cada una: `02-api-exploration-findings.md` §8. Implementación: `notebooks/01-exploracion-catalogo.ipynb`.
 
-**Decisión (3/6):** se construyen **#2, #4 y #6**, porque cubren tres ángulos distintos del catálogo:
-- **#2** — panorama: qué bases concentran más indicadores (líderes del catálogo).
-- **#4** — calidad: 44 de 158 bases tienen fin nominal ≠ último dato real (39 desactualizadas, 5 con proyecciones), evidencia directa de la advertencia de frescura.
-- **#6** — selección: amplitud vs profundidad, resaltando las 8 bases del shortlist temático; justifica el recorte del Paso 2.
+**Decisión (6/6):** se construyen las seis, priorizando las tres más narrativas:
+- **#4** — calidad: 44 de 158 bases tienen fin nominal ≠ último dato real (39 sobreestiman, 5 subestiman).
+- **#6** — selección: amplitud vs profundidad, resaltando las 8 bases del shortlist temático.
+- **#2** — panorama: el top 20 de bases concentra el 75,5 % de los indicadores.
 
-#1, #3 y #5 quedan descartadas por las razones de la tabla; si se necesita contexto regional o de periodicidad, va como nota al pie del anexo.
+#1, #3 y #5 quedan como contexto de catálogo, con recortes para que sean legibles:
+- **#1** usa los campos L0/L1/L2 de `indicators.csv` (no `topic_summary.csv`, que mezcla vocabularios) y muestra el 40 % sin clasificar.
+- **#3** limita a las 25 bases con más indicadores + el shortlist (32 bases × 9 regiones) y usa 5 bandas discretas de color, sin gradiente continuo.
+- **#5** muestra solo las 13 bases que **no** son 100 % anuales (de 171) y las etiqueta con nombre legible + código; las 158 restantes se omiten por ser redundantes.
 
 ## 5. Paso 2 — Visualizaciones (3 obligatorias)
 
@@ -177,7 +180,7 @@ Detalle de cada una: `02-api-exploration-findings.md` §8.
 
 | # | Pregunta | Decisión | Fecha |
 |---|---|---|---|
-| 1 | ¿Qué viz de exploración construir? | #2 (top-N bases), #4 (dumbbell frescura) y #6 (scatter amplitud/profundidad) | 2026-11-20 |
+| 1 | ¿Qué viz de exploración construir? | Las 6 (panorama, estructura, región, frescura, periodicidad y amplitud/profundidad) | 2026-11-20 |
 | 2 | Herramienta de las viz | Altair / Vega-Lite leyendo los CSV de `data/derived/` | 2026-11-20 |
 
 ## Apéndice A — Acceso a la API

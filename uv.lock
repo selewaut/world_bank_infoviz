@@ -1687,6 +1687,15 @@ wheels = [
 ]
 
 [[package]]
+name = "squarify"
+version = "0.4.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a5/33/26dbf6025af9c5289519f9ac20b82b3e8cff1eb570af4d055b6f0fd31bdd/squarify-0.4.5.tar.gz", hash = "sha256:733c9ef74cee369a83d61a050aea0812f182f0216d9b2bde76691c87443f6883", size = 5549, upload-time = "2026-09-11T02:30:04.65Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/47/cf/d4d904419659d7e971f02b80690437f846c308b0ddd0a16c9a38fec4457e/squarify-0.4.5-py3-none-any.whl", hash = "sha256:2689b426eccf4c5aefc28c7fc5363a9e671c0391a17d86c50de8f6ea739606f3", size = 4147, upload-time = "2026-09-11T02:30:03.877Z" },
+]
+
+[[package]]
 name = "stack-data"
 version = "0.6.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1893,6 +1902,7 @@ dependencies = [
     { name = "jupyterlab" },
     { name = "pandas" },
     { name = "requests" },
+    { name = "squarify" },
 ]
 
 [package.metadata]
@@ -1901,4 +1911,5 @@ requires-dist = [
     { name = "jupyterlab", specifier = ">=4.6.6" },
     { name = "pandas", specifier = ">=3.1.1" },
     { name = "requests", specifier = ">=2.34.2" },
+    { name = "squarify", specifier = ">=0.4.5" },
 ]
