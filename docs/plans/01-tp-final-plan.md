@@ -24,17 +24,17 @@
 
 ## 2. Objetivo y pregunta de investigación
 
-- **Tema:** Energía, desarrollo económico y datacenters conectados.
-- **Pregunta central:** ¿La infraestructura digital se instala donde hay ingreso y electricidad, y sobre qué matriz eléctrica se apoya?
-- **Mensaje en una frase:** Los datacenters siguen al ingreso y a la electricidad disponible; la limpieza de la matriz es un eje aparte (hidro en LAC vs carbón en Asia).
-- **Por qué es relevante:** El boom de IA reabre la demanda eléctrica. Data360 no mide TWh de salas, pero sí ubica facilities (PeeringDB 2023) y el mix IEA/WDI del país anfitrión.
+- **Tema:** Energía, desarrollo, hidrocarburos e interconexión digital.
+- **Pregunta central:** ¿La infraestructura digital se instala donde hay ingreso y electricidad, sobre qué matriz, con qué intensidad energética, y coincide eso con quienes exportan petróleo/gas?
+- **Mensaje en una frase:** Los datacenters siguen al ingreso y a la electricidad; intensidad y mix fósil son ejes aparte, y los petroestados no son los hubs de PeeringDB.
+- **Por qué es relevante:** El boom de IA reabre la demanda eléctrica. Data360 ubica facilities (PeeringDB 2023), mix e intensidad tipo IEA, y dependencia de fuel exports.
 
 ## 3. Alcance del tema
 
-- **Incluye:** conteo de datacenters 2023, PIB per cápita PPA, población, kWh/persona, % de generación (carbón, gas, petróleo, nuclear, hidro, residual).
-- **Excluye:** series de datacenters (no existen), Ookla, RISE como viz principal, acceso a electricidad, consumo TWh de DC (no está en Data360).
+- **Incluye:** datacenters 2023, PIB PPA, población y crecimiento, kWh/persona, intensidad energética, matriz IEA/WDI, fuel exports y rentas oil/gas.
+- **Excluye:** series de datacenters, Ookla, RISE, Brent/WTI (no están), producción IFS de crudo (13 países), TWh de DC.
 - **Recorte geográfico:** global, país ISO3, color por región WB; Argentina siempre anotada.
-- **Recorte temporal:** corte **2023** para alinear PeeringDB con WDI. Serie 2000–2023 solo si se hace la viz de apoyo V5.
+- **Recorte temporal:** **2023** para PeeringDB/PIB/kWh/matriz/fuel exports; intensidad **2022**; rentas **2021**.
 
 ## 4. Paso 1 — Exploración de la API
 
@@ -188,7 +188,9 @@ Detalle narrativo, caveats y 2 viz de apoyo: [`03-story-energy-datacenters.md`](
 | 2 | Herramienta de las viz | Altair / Vega-Lite leyendo los CSV de `data/derived/` | 2026-11-20 |
 | 3 | Tema periodístico | Energía × desarrollo × datacenters (PeeringDB 2023 + WDI/IEA) | 2026-11-27 |
 | 4 | Tres viz de entrega | V1 coropleta DC; V2 scatter PIB×densidad; V3 matriz eléctrica | 2026-11-27 |
-| 5 | Dataset IEA | No hay base IEA en Data360; matriz WDI `EG_ELC_*` usa metodología IEA | 2026-11-27 |
+| 5 | Dataset IEA | No hay base IEA en Data360; matriz `EG_ELC_*` e intensidad `EG_EGY_PRIM_PP_KD` usan metodología IEA | 2026-11-27 |
+| 6 | Oil/gas prices | Sin Brent/WTI; proxy PCTOT o fuel exports/rentas, no viz núcleo | 2026-11-27 |
+| 7 | Viz de apoyo | V4 intensidad energética; V5 fuel exports vs DC | 2026-11-27 |
 
 ## Apéndice A — Acceso a la API
 
