@@ -1,0 +1,3 @@
+[mcp_servers.data360]
+url = "https://maimcpext.worldbank.org/ext/data360/mcp"
+enabled = true

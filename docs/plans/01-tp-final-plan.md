@@ -10,7 +10,7 @@
 | Trabajo | TP Final — Visualización de Datos con World Bank Data360 |
 | Integrantes | TODO (3) |
 | Entrega | 2026-11-30 00:00 |
-| Estado | Paso 1 completado — tema y visualizaciones a definir |
+| Estado | Paso 1 hecho; Paso 2 — historia y 3 viz núcleo definidas (ver `03-story-energy-datacenters.md`) |
 | Herramienta | Python + Altair en Colab (recomendado); Observable para publicar |
 | Repo | `world_bank_infoviz` |
 
@@ -18,22 +18,23 @@
 
 - **Paso 1:** explorar la API de Data360 → qué bases de datos existen, qué indicadores hay, cómo se estructuran (país, tiempo, temática).
 - **Paso 2:** hasta **3 visualizaciones** (preferentemente interactivas), aptas para una nota/artículo periodístico.
-- **Bonus:** usar el protocolo MCP para acceder a la API. *(Ya configurado en `opencode.json` → `data360-mcp`.)*
+- **Bonus:** usar el protocolo MCP para acceder a la API. *(Grok: `.grok/config.toml` → `data360`; OpenCode: `opencode.json` → `data360-mcp`.)*
+- Historia del Paso 2: [`03-story-energy-datacenters.md`](03-story-energy-datacenters.md).
 - Enunciado completo: [`InfoVis _ ECD.2026.B _ TP Final.md`](../../InfoVis%20_%20ECD.2026.B%20_%20TP%20Final.md)
 
 ## 2. Objetivo y pregunta de investigación
 
-- **Tema tentativo:** TODO — datacenters / internet / conectividad / energía / infraestructura.
-- **Pregunta central:** TODO
-- **Mensaje en una frase (para el lector periodístico):** TODO
-- **Por qué es relevante:** TODO
+- **Tema:** Energía, desarrollo económico y datacenters conectados.
+- **Pregunta central:** ¿La infraestructura digital se instala donde hay ingreso y electricidad, y sobre qué matriz eléctrica se apoya?
+- **Mensaje en una frase:** Los datacenters siguen al ingreso y a la electricidad disponible; la limpieza de la matriz es un eje aparte (hidro en LAC vs carbón en Asia).
+- **Por qué es relevante:** El boom de IA reabre la demanda eléctrica. Data360 no mide TWh de salas, pero sí ubica facilities (PeeringDB 2023) y el mix IEA/WDI del país anfitrión.
 
 ## 3. Alcance del tema
 
-- **Incluye:** TODO
-- **Excluye:** TODO
-- **Recorte geográfico:** TODO (global / regiones / países seleccionados)
-- **Recorte temporal:** TODO (último año / serie histórica / comparación de períodos)
+- **Incluye:** conteo de datacenters 2023, PIB per cápita PPA, población, kWh/persona, % de generación (carbón, gas, petróleo, nuclear, hidro, residual).
+- **Excluye:** series de datacenters (no existen), Ookla, RISE como viz principal, acceso a electricidad, consumo TWh de DC (no está en Data360).
+- **Recorte geográfico:** global, país ISO3, color por región WB; Argentina siempre anotada.
+- **Recorte temporal:** corte **2023** para alinear PeeringDB con WDI. Serie 2000–2023 solo si se hace la viz de apoyo V5.
 
 ## 4. Paso 1 — Exploración de la API
 
@@ -131,32 +132,34 @@ Detalle de cada una: `02-api-exploration-findings.md` §8. Implementación: `not
 
 ## 5. Paso 2 — Visualizaciones (3 obligatorias)
 
-### Visualización 1
+Detalle narrativo, caveats y 2 viz de apoyo: [`03-story-energy-datacenters.md`](03-story-energy-datacenters.md).
 
-- **Pregunta:** TODO
-- **Indicador(es):** TODO
-- **Tipo de gráfico:** TODO
-- **Herramienta:** TODO
-- **Interactividad:** TODO (filtro, tooltip, slider, etc.)
-- **Nota de fuente:** TODO
+### Visualización 1 — Coropleta de datacenters
 
-### Visualización 2
+- **Pregunta:** ¿Dónde se concentran los datacenters conectados?
+- **Indicador(es):** `PEERING_DB_CONN_DATA_CENT` (2023)
+- **Tipo de gráfico:** coropleta mundial, escala log / umbrales
+- **Herramienta:** Altair + geometría ISO3
+- **Interactividad:** tooltip país / n / región; toggle opcional por millón de hab.
+- **Nota de fuente:** PeeringDB vía Data360, snapshot 2023. No es MW ni consumo.
 
-- **Pregunta:** TODO
-- **Indicador(es):** TODO
-- **Tipo de gráfico:** TODO
-- **Herramienta:** TODO
-- **Interactividad:** TODO
-- **Nota de fuente:** TODO
+### Visualización 2 — Scatter desarrollo × densidad digital
 
-### Visualización 3
+- **Pregunta:** ¿Los datacenters siguen al ingreso y a la electricidad per cápita?
+- **Indicador(es):** `NY_GDP_PCAP_PP_KD` (x), DC / millón hab. (y, derivado con `SP_POP_TOTL`), tamaño = `EG_USE_ELEC_KH_PC`, color = región
+- **Tipo de gráfico:** scatter
+- **Herramienta:** Altair
+- **Interactividad:** tooltip, brush por región, labels en hubs + ARG
+- **Nota de fuente:** WDI 2023 inner-joined con PeeringDB. El eje y usa densidad, no el conteo crudo.
 
-- **Pregunta:** TODO
-- **Indicador(es):** TODO
-- **Tipo de gráfico:** TODO
-- **Herramienta:** TODO
-- **Interactividad:** TODO
-- **Nota de fuente:** TODO
+### Visualización 3 — Matriz eléctrica de los hubs
+
+- **Pregunta:** ¿Con qué se genera la electricidad en los países con más datacenters?
+- **Indicador(es):** `EG_ELC_COAL_ZS`, `NGAS_ZS`, `PETR_ZS`, `NUCL_ZS`, `HYRO_ZS` + residual 2023 (metodología IEA en WDI)
+- **Tipo de gráfico:** barras apiladas 100%, top 10 DC + ARG + FRA
+- **Herramienta:** Altair
+- **Interactividad:** hover por fuente
+- **Nota de fuente:** WDI / IEA. `RNWX` corta en 2021; el residual 2023 cubre eólica/solar y desajustes.
 
 ## 6. Setup técnico
 
@@ -170,10 +173,11 @@ Detalle de cada una: `02-api-exploration-findings.md` §8. Implementación: `not
 
 - [x] **Hito 1** — Bases de datos e indicadores relevados (Paso 1).
 - [x] **Hito 2** — Estructura, completitud, frescura y advertencias documentadas.
-- [ ] **Hito 3** — Datos descargados y validados **para el tema elegido**.
-- [ ] **Hito 4** — Visualización 1.
-- [ ] **Hito 5** — Visualización 2.
-- [ ] **Hito 6** — Visualización 3.
+- [x] **Hito 3a** — Tema, pregunta y arco de 3 viz núcleo definidos (`03-story-energy-datacenters.md`).
+- [ ] **Hito 3** — Datos 2023 descargados y validados (join PeeringDB + WDI).
+- [ ] **Hito 4** — Visualización 1 (coropleta DC).
+- [ ] **Hito 5** — Visualización 2 (scatter).
+- [ ] **Hito 6** — Visualización 3 (matriz).
 - [ ] **Hito 7** — Redacción / notas de fuente / entrega.
 
 ## 8. Preguntas abiertas y decisiones
@@ -182,6 +186,9 @@ Detalle de cada una: `02-api-exploration-findings.md` §8. Implementación: `not
 |---|---|---|---|
 | 1 | ¿Qué viz de exploración construir? | Las 6 (panorama, estructura, región, frescura, periodicidad y amplitud/profundidad) | 2026-11-20 |
 | 2 | Herramienta de las viz | Altair / Vega-Lite leyendo los CSV de `data/derived/` | 2026-11-20 |
+| 3 | Tema periodístico | Energía × desarrollo × datacenters (PeeringDB 2023 + WDI/IEA) | 2026-11-27 |
+| 4 | Tres viz de entrega | V1 coropleta DC; V2 scatter PIB×densidad; V3 matriz eléctrica | 2026-11-27 |
+| 5 | Dataset IEA | No hay base IEA en Data360; matriz WDI `EG_ELC_*` usa metodología IEA | 2026-11-27 |
 
 ## Apéndice A — Acceso a la API
 
