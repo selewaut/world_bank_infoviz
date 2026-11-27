@@ -84,6 +84,9 @@ Data360 **no tiene un dataset IEA propio**. Lo “IEA” usable es WDI:
 | Renovables consumo | `WB_WDI` | `WB_WDI_EG_FEC_RNEW_ZS` | % TFEC | 1990–2022 | ~212 |
 | Intensidad energética | `WB_WDI` | `WB_WDI_EG_EGY_PRIM_PP_KD` | MJ / $2021 PPA PIB | 2000–**2022** | ~201 |
 | Crecimiento poblacional | `WB_WDI` | `WB_WDI_SP_POP_GROW` | % anual | 1961–2025 | amplia |
+| Bandwidth internacional (uso) | `ITU_DH` | `INT_CONN_BAND` | Mbit/s | 2000–2024 | ~224 |
+| Bandwidth lit/equipped | `ITU_DH` | `INT_CONN_BAND_PS` | Mbit/s | 2006–2024 | ~165 |
+| Usuarios de internet | `ITU_DH` / `WB_WDI` | `IT_NET_USER` / `IT_NET_USER_ZS` | % población | 2000–2025 | amplia |
 | Fuel exports | `WB_WDI` | `WB_WDI_TX_VAL_FUEL_ZS_UN` | % exportaciones mercadería | 1962–2024 | ~197 |
 | Fuel imports | `WB_WDI` | `WB_WDI_TM_VAL_FUEL_ZS_UN` | % importaciones | 1962–2024 | ~197 |
 | Rentas petróleo | `WB_WDI` | `WB_WDI_NY_GDP_PETR_RT_ZS` | % PIB | 1970–**2021** | ~200 |
@@ -147,6 +150,24 @@ Data360 **no tiene un dataset IEA propio**. Lo “IEA” usable es WDI:
 | Population / growth | Contexto | Denominador de V2 (`dc_per_million`); `SP_POP_GROW` en tooltip, no chart |
 | Electricity intensive (kWh/persona) | Contexto | Tamaño en V2; V4 si se prefiere kWh en vez de intensidad |
 | Oil/gas prices | Fuera del núcleo | Pie de nota + anexo PCTOT si hace falta un gráfico de términos de intercambio |
+| Conectividad ITU (`ITU_DH`) | **Fijo en V1/V2** | V1: toggle fill DC vs `INT_CONN_BAND`. V2: tooltip `% internet` + bandwidth |
+| IA (`OECD_AI`, `IMF_AI`) | Fuera del arco | Una cifra en el lede/cierre si hace falta; no chart |
+
+### Presupuesto de dimensiones (no entra un 6.º mapa)
+
+El TP admite **3** viz; el arco de la nota ya tiene **5**. Un sexto choropleta de `ITU_DH` pelea con V1 (misma geografía) y diluye energía.
+
+| Chart | Codificaciones ya usadas | Qué se puede sumar | Qué no |
+|---|---|---|---|
+| V1 mapa | color = DC **o** ITU bandwidth (toggle) | Tooltip: n DC, DC/millón, `INT_CONN_BAND` | Segundo mapa ITU; toggle extra DC vs /millón (eso ya es el eje y de V2) |
+| V2 scatter | x PIB, y DC/millón, size kWh, color región | Tooltip: `% internet` ITU/WDI + bandwidth | Un 5.º canal visual (forma, opacidad, facet) |
+| V3 barras | país × fuente % | Nada | — |
+| V4 mapa | color = intensidad | Tooltip DC | — |
+| V5 mapa | color = fuel exports | Tooltip DC | Reemplazar V5 por bandwidth **solo si** se prefiere digital a hidrocarburos |
+
+`ITU_DH` entra porque es el **caño** (Mbit/s internacionales) del mismo objeto que PeeringDB cuenta como **sala**. Eso es un toggle, no una historia nueva.
+
+No entran como viz: Ookla (velocidad al usuario final), `OECD_AI` papers, `IMF_AI` índice, `EPC_AI` (34 países), `PCH_IXP` (redundante con PeeringDB).
 
 ---
 
@@ -154,15 +175,18 @@ Data360 **no tiene un dataset IEA propio**. Lo “IEA” usable es WDI:
 
 Orden de lectura = orden de la nota. Interactividad mínima en todas: tooltip de país, valor y fuente.
 
-### V1 — Mapa: dónde está la nube (núcleo, TP)
+### V1 — Mapa: salas vs caños (núcleo, TP)
 
-- **Pregunta:** ¿En qué países se concentran los datacenters conectados?
-- **Tipo:** Coropleta mundial. Color = `PEERING_DB_CONN_DATA_CENT` (escala **log** o umbrales, no lineal: USA aplasta el resto).
-- **Año:** 2023.
-- **Codificación:** `iso3` → geometría; gris = sin dato PeeringDB (no cero).
-- **Interactividad:** hover (país, n, región); opcional toggle “conteo” vs “por millón de habitantes”.
-- **Texto al pie:** “Estados Unidos concentra más salas conectadas que Brasil, Alemania, Reino Unido e India juntos. El mapa cuenta **facilities en PeeringDB**, no MW instalados ni consumo.”
-- **Por qué esta viz:** abre la nota con geografía. Cumple el pedido de coropleta país/región.
+- **Pregunta:** ¿Dónde están los datacenters conectados, y coinciden con el bandwidth internacional?
+- **Tipo:** Una coropleta, **dos fills** (radio / dropdown).
+  - Default: `PEERING_DB_CONN_DATA_CENT` 2023 (escala **log**).
+  - Toggle: `ITU_DH` `INT_CONN_BAND` 2023 (Mbit/s, también log).
+- **Año:** 2023 (inner join; gris = missing de esa capa, no cero).
+- **Codificación:** `iso3` → geometría. Misma proyección al cambiar el fill.
+- **Tooltip (siempre):** país, región, n DC, DC por millón, bandwidth Mbit/s, fuente de la capa activa.
+- **No** segundo toggle “DC vs DC/millón”: esa densidad es el eje y de V2.
+- **Texto al pie:** “Estados Unidos concentra más salas listadas que Brasil, Alemania, Reino Unido e India juntos. PeeringDB cuenta **facilities**; ITU cuenta **uso de bandwidth internacional** (Mbit/s). Más caño no implica más salas en el registro.”
+- **Por qué esta viz:** geografía de la nube + la capa ITU sin un mapa extra.
 
 ### V2 — Scatter: ingreso, electricidad y densidad digital (núcleo, TP)
 
@@ -172,10 +196,11 @@ Orden de lectura = orden de la nota. Interactividad mínima en todas: tooltip de
   - **y** = datacenters **por millón de habitantes** (no el conteo crudo: si no, India/Indonesia ganan por tamaño)
   - **tamaño** = kWh per cápita
   - **color** = región WB
-- **Año:** 2023 (inner join de los tres indicadores + población).
-- **Interactividad:** tooltip con PIB, DC, DC/millón, kWh, **crecimiento poblacional**, región; brush por región; labels fijos en USA, NLD, SGP, BRA, IND, ARG, IRL.
+- **Año:** 2023 (inner join PeeringDB + WDI + ITU; si falta ITU, el punto se dibuja igual y el tooltip dice “s/d”).
+- **Interactividad:** tooltip **fijo** con PIB, DC, DC/millón, kWh, crecimiento poblacional, **`IT_NET_USER` / `IT_NET_USER_ZS` (% internet)**, **`INT_CONN_BAND` (Mbit/s)**, región. Brush por región; labels en USA, NLD, SGP, BRA, IND, ARG, IRL.
+- **ITU no es canal visual** (ni tamaño ni color): V2 ya tiene cuatro. Conectividad va al hover.
 - **Hipótesis visual:** nube de países ricos y electrificados arriba-derecha; India/Indonesia abajo (mucho conteo absoluto, poca densidad); Países Bajos / Irlanda / Singapur como outliers de densidad.
-- **Texto al pie:** “Un país puede tener muchas salas porque es grande y sigue creciendo (India) o porque es un hub de interconexión (Países Bajos). El eje vertical usa densidad para no confundir las dos historias.”
+- **Texto al pie:** “Un país puede tener muchas salas porque es grande (India) o porque es un hub (Países Bajos). El eje vertical es densidad. El hover muestra usuarios de internet y bandwidth ITU: el caño y el uso, no solo el rack.”
 
 ### V3 — Matriz eléctrica de los hubs (núcleo, TP)
 
@@ -205,6 +230,7 @@ Orden de lectura = orden de la nota. Interactividad mínima en todas: tooltip de
 - **No es producción en barriles.** Data360 no tiene un censo global de crude output usable (IFS = 13 países). Rentas `% PIB` (2021) y fuel exports `%` son el proxy correcto de “economía de hidrocarburos”.
 - **Precios:** no chart. Una frase en el pie: los precios spot no están en Data360; el shock de 2022 se lee, si se quiere, en `IMF_PCTOT_X` para exportadores (NOR, SAU, NGA, ARG) como anexo.
 - **Si hay que recortar a 3 viz:** V5 es la última en caer; el contraste petroestado vs hub se puede decir en texto bajo V3.
+- **Swap (no extra):** si se prefiere conectividad a hidrocarburos, V5 pasa a ser el choropleta de `INT_CONN_BAND` y fuel exports queda en el pie. No las dos.
 
 ---
 

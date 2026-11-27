@@ -134,23 +134,23 @@ Detalle de cada una: `02-api-exploration-findings.md` §8. Implementación: `not
 
 Detalle narrativo, caveats y 2 viz de apoyo: [`03-story-energy-datacenters.md`](03-story-energy-datacenters.md).
 
-### Visualización 1 — Coropleta de datacenters
+### Visualización 1 — Coropleta salas vs caños
 
-- **Pregunta:** ¿Dónde se concentran los datacenters conectados?
-- **Indicador(es):** `PEERING_DB_CONN_DATA_CENT` (2023)
-- **Tipo de gráfico:** coropleta mundial, escala log / umbrales
+- **Pregunta:** ¿Dónde se concentran los datacenters, y coinciden con el bandwidth internacional?
+- **Indicador(es):** `PEERING_DB_CONN_DATA_CENT` (2023, default) + `ITU_DH` `INT_CONN_BAND` (2023, Mbit/s, toggle)
+- **Tipo de gráfico:** una coropleta, dos fills (log)
 - **Herramienta:** Altair + geometría ISO3
-- **Interactividad:** tooltip país / n / región; toggle opcional por millón de hab.
-- **Nota de fuente:** PeeringDB vía Data360, snapshot 2023. No es MW ni consumo.
+- **Interactividad:** radio/dropdown DC vs bandwidth; tooltip con n DC, DC/millón, bandwidth, región
+- **Nota de fuente:** PeeringDB 2023 (salas listadas, no MW) + ITU DataHub bandwidth de uso internacional.
 
 ### Visualización 2 — Scatter desarrollo × densidad digital
 
 - **Pregunta:** ¿Los datacenters siguen al ingreso y a la electricidad per cápita?
-- **Indicador(es):** `NY_GDP_PCAP_PP_KD` (x), DC / millón hab. (y, derivado con `SP_POP_TOTL`), tamaño = `EG_USE_ELEC_KH_PC`, color = región
+- **Indicador(es):** `NY_GDP_PCAP_PP_KD` (x), DC / millón hab. (y, con `SP_POP_TOTL`), tamaño = `EG_USE_ELEC_KH_PC`, color = región
 - **Tipo de gráfico:** scatter
 - **Herramienta:** Altair
-- **Interactividad:** tooltip, brush por región, labels en hubs + ARG
-- **Nota de fuente:** WDI 2023 inner-joined con PeeringDB. El eje y usa densidad, no el conteo crudo.
+- **Interactividad:** tooltip con PIB, DC, kWh, pop growth, **`IT_NET_USER` / `IT_NET_USER_ZS`**, **`INT_CONN_BAND`**; brush por región; labels hubs + ARG. ITU no es tamaño ni color.
+- **Nota de fuente:** WDI 2023 + PeeringDB + ITU DataHub. El eje y usa densidad, no el conteo crudo.
 
 ### Visualización 3 — Matriz eléctrica de los hubs
 
@@ -191,6 +191,7 @@ Detalle narrativo, caveats y 2 viz de apoyo: [`03-story-energy-datacenters.md`](
 | 5 | Dataset IEA | No hay base IEA en Data360; matriz `EG_ELC_*` e intensidad `EG_EGY_PRIM_PP_KD` usan metodología IEA | 2026-11-27 |
 | 6 | Oil/gas prices | Sin Brent/WTI; proxy PCTOT o fuel exports/rentas, no viz núcleo | 2026-11-27 |
 | 7 | Viz de apoyo | V4 intensidad energética; V5 fuel exports vs DC | 2026-11-27 |
+| 8 | ITU en V1/V2 | Toggle `INT_CONN_BAND` en V1; tooltip internet + bandwidth en V2; sin 6.º mapa | 2026-11-27 |
 
 ## Apéndice A — Acceso a la API
 
